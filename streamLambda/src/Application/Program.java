@@ -20,26 +20,26 @@ public class Program {
         System.out.print("Enter full file path: ");
         String path = sc.nextLine();
 
-        List<Employee> empList = new ArrayList<>();
-
         try(BufferedReader br = new BufferedReader(new FileReader(path))){
+
+            List<Employee> empList = new ArrayList<>();
+
             String line = br.readLine();
             while (line != null) {
-                String[] Line = line.split(",");
-                String name = Line[0];
-                String email = Line[1];
-                Double salary = Double.parseDouble(Line[2]);
-
-                empList.add(new Employee(email, name, salary));
+                String[] fields = line.split(",");
+                empList.add(new Employee(fields[1], fields[0], Double.parseDouble(fields[2])));
+                line = br.readLine();
             }
 
             System.out.print("Enter salary:");
             double salaryFilter = sc.nextDouble();
-            System.out.print("Email of people whose salary is more than " + salaryFilter);
-            System.out.println(empList.stream().filter(e -> e.getSalary() > salaryFilter).map(Employee::getEmail).collect(Collectors.toList()));
 
-            double sum = empList.stream().map(e -> e.getSalary()).reduce(0.0, (x,y) -> x + y);
-            System.out.println("Sum of salary of people whose name starts with 'M': " + sum);
+            List<String> emails = empList.stream().filter(e -> e.getSalary() > salaryFilter).map(x -> x.getEmail()).sorted().collect(Collectors.toList());
+            System.out.println("Email of people whose salary is more than " + String.format("%.2f", salaryFilter) + ":");
+            emails.forEach(System.out::println);
+
+            double sum = empList.stream().filter(x -> x.getName().charAt(0) == 'M').map(e -> e.getSalary()).reduce(0.0, (x,y) -> x + y);
+            System.out.println("Sum of salary of people whose name starts with 'M': " + String.format("%.2f", sum));
 
         } catch (IOException e){
             System.out.println("Error reading file!!");
